@@ -1,41 +1,37 @@
-language: android
-
+after_success:
+- .buildscript/deploy_snapshot.sh
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-25.0.2
-    - extra-android-m2repository
-    - android-25
-
-jdk:
-  - oraclejdk8
-
-script:
-  - ./gradlew clean check
-
-after_success:
-  - .buildscript/deploy_snapshot.sh
-
-env:
-  global:
-    - secure: "ewGvOsV2RSG7Zt4RIwc53LhC5cxN7TP1Bo6Wy/LVNLNMfvD5X1+z1KPzP4j036zAQ6fq6Oi/Y2Mn0HLYrmVxHInXq9rMzHVDRC0ygO1r/rQ4SHli8ZjiMOjICLn2rBdgZMN2UVca6iFblIkSBu7lAsU0hSL/fn5V840YIysX8Rk="
-    - secure: "CO/LRw7XKHBOYrwY7uUhwcDpkmQReYKxEWn2jX37k5fHPFU9Jps1rLrXlOU0OD5H2sAdnT2SaLLAd0lW9/dvrYbSDcmvrlDtHitg+uWe6r67kXOQpQty7jj8QKt660ThSbwrO8nSTPXzbbUPBdisE5TMyrUj1AgEhvjEEH2uQAg="
-
+  - tools
+  - platform-tools
+  - build-tools-25.0.2
+  - extra-android-m2repository
+  - android-25
+before_install:
+- wget https://dl.dropboxusercontent.com/u/7897865/apache-maven-3.3.9.zip
+- unzip -qq apache-maven-3.3.9.zip
+- export M2_HOME=$PWD/apache-maven-3.3.9
+- export PATH=$M2_HOME/bin:$PATH
 branches:
   except:
-    - gh-pages
-
-notifications:
-  email: false
-
-sudo: false
-
+  - gh-pages
 cache:
   directories:
-    - $HOME/.gradle
-before_install:
-  - wget https://dl.dropboxusercontent.com/u/7897865/apache-maven-3.3.9.zip
-  - unzip -qq apache-maven-3.3.9.zip
-  - export M2_HOME=$PWD/apache-maven-3.3.9
-  - export PATH=$M2_HOME/bin:$PATH
+  - $HOME/.gradle
+env:
+  global:
+  - secure: ewGvOsV2RSG7Zt4RIwc53LhC5cxN7TP1Bo6Wy/LVNLNMfvD5X1+z1KPzP4j036zAQ6fq6Oi/Y2Mn0HLYrmVxHInXq9rMzHVDRC0ygO1r/rQ4SHli8ZjiMOjICLn2rBdgZMN2UVca6iFblIkSBu7lAsU0hSL/fn5V840YIysX8Rk=
+  - secure: CO/LRw7XKHBOYrwY7uUhwcDpkmQReYKxEWn2jX37k5fHPFU9Jps1rLrXlOU0OD5H2sAdnT2SaLLAd0lW9/dvrYbSDcmvrlDtHitg+uWe6r67kXOQpQty7jj8QKt660ThSbwrO8nSTPXzbbUPBdisE5TMyrUj1AgEhvjEEH2uQAg=
+jdk:
+- oraclejdk8
+language: android
+notifications:
+  email: false
+  slack:
+    rooms: flakycov:U2MeVOPjdi4up1U793ubeIUZ
+    template:
+    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}
+    - 'dashbot: %{repository_name} %{build_id}'
+script:
+- ./gradlew clean check
+sudo: false
